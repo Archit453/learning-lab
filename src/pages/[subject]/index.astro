@@ -26,6 +26,11 @@ const displayTopics = [...orderedTopics, ...unorderedTopics];
 
 <Layout>
 	<main class="subject-page">
+		<a class="home-link" href="/">
+			<span aria-hidden="true">&lt;-</span>
+			<span>Learning Lab</span>
+		</a>
+
 		<section class="subject-hero" aria-labelledby="subject-title">
 			<p class="eyebrow">Subject</p>
 			<h1 id="subject-title">{subject.data.title}</h1>
@@ -63,6 +68,27 @@ const displayTopics = [...orderedTopics, ...unorderedTopics];
 		width: min(100%, var(--lab-max));
 		margin: 0 auto;
 		padding: clamp(34px, 6vw, 84px) clamp(18px, 4vw, 52px) clamp(54px, 8vw, 104px);
+	}
+
+	.home-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		color: var(--lab-faint);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-decoration: none;
+		text-transform: uppercase;
+		transition:
+			color 220ms ease,
+			transform 220ms ease;
+	}
+
+	.home-link:hover {
+		color: var(--lab-cyan);
+		transform: translateX(-2px);
 	}
 
 	.subject-hero {

@@ -33,6 +33,7 @@ export async function getStaticPaths() {
 				props: {
 					subject,
 					topic,
+					subjectTopics: displayTopics,
 					previousTopic: displayTopics[index - 1] ?? null,
 					nextTopic: displayTopics[index + 1] ?? null,
 				},
@@ -54,6 +55,7 @@ export async function getStaticPaths() {
 				props: {
 					subject,
 					topic,
+					subjectTopics,
 					previousTopic: subjectTopics[index - 1] ?? null,
 					nextTopic: subjectTopics[index + 1] ?? null,
 				},
@@ -64,16 +66,110 @@ export async function getStaticPaths() {
 	return paths;
 }
 
-const { subject, topic, previousTopic, nextTopic } = Astro.props;
+const { subject, topic, subjectTopics, previousTopic, nextTopic } = Astro.props;
+const currentTopicIndex = subjectTopics.findIndex(
+	(subjectTopic) => subjectTopic.data.slug === topic.data.slug,
+);
+
+const defaultGroupDefinition = [
+	{ title: "Foundations", slugs: ["why-javascript-exists", "data-types", "operators", "loops"] },
+	{ title: "Language Mechanics", slugs: ["functions", "scope", "closures"] },
+	{ title: "Runtime", slugs: ["event-loop"] },
+];
+
+const groupDefinitionsBySubject = {
+	javascript: defaultGroupDefinition,
+};
+
+function getInvestigationGroups(subjectSlug, topics) {
+	const definitions = groupDefinitionsBySubject[subjectSlug] ?? [
+		{ title: "Investigations", slugs: topics.map((topic) => topic.data.slug) },
+	];
+	const topicMap = new Map(topics.map((topic) => [topic.data.slug, topic]));
+	const usedSlugs = new Set();
+	const groups = definitions
+		.map((group) => {
+			const groupTopics = group.slugs.map((slug) => topicMap.get(slug)).filter(Boolean);
+
+			for (const groupTopic of groupTopics) {
+				usedSlugs.add(groupTopic.data.slug);
+			}
+
+			return { title: group.title, topics: groupTopics };
+		})
+		.filter((group) => group.topics.length > 0);
+	const uncategorizedTopics = topics.filter((topic) => !usedSlugs.has(topic.data.slug));
+
+	if (uncategorizedTopics.length > 0) {
+		groups.push({ title: "More Investigations", topics: uncategorizedTopics });
+	}
+
+	return groups;
+}
+
+const investigationGroups = getInvestigationGroups(subject.data.slug, subjectTopics);
 ---
 
 <Layout>
 	<main class="topic-page">
-		<nav class="breadcrumb" aria-label="Breadcrumb">
-			<a href={`/${topic.data.subject}`}>{subject.data.title}</a>
-			<span aria-hidden="true">/</span>
-			<span>{topic.data.title}</span>
+		<nav class="orientation" aria-label="Breadcrumb">
+			<a class="home-link" href="/">
+				<span aria-hidden="true">&lt;-</span>
+				<span>Learning Lab</span>
+			</a>
+			<div class="breadcrumb">
+				<a href={`/${topic.data.subject}`}>{subject.data.title}</a>
+				<span aria-hidden="true">/</span>
+				<span>{topic.data.title}</span>
+			</div>
 		</nav>
+
+		<details class="investigation-map">
+			<summary>
+				<span>Map of Investigations</span>
+				<span aria-hidden="true">▾</span>
+			</summary>
+			<div class="map-panel">
+				{
+					investigationGroups.map((group) => (
+						<section class="map-group" aria-label={group.title}>
+							<h2>{group.title}</h2>
+							<ol>
+								{
+									group.topics.map((mapTopic) => {
+										const mapTopicIndex = subjectTopics.findIndex(
+											(subjectTopic) => subjectTopic.data.slug === mapTopic.data.slug,
+										);
+										const marker =
+											mapTopic.data.slug === topic.data.slug
+												? "●"
+												: mapTopicIndex < currentTopicIndex
+													? "✓"
+													: "○";
+
+										return (
+											<li>
+												<a
+													class:list={[
+														"map-link",
+														{ "is-current": mapTopic.data.slug === topic.data.slug },
+													]}
+													href={`/${subject.data.slug}/${mapTopic.data.slug}`}
+													aria-current={mapTopic.data.slug === topic.data.slug ? "page" : undefined}
+												>
+													<span class="map-marker" aria-hidden="true">{marker}</span>
+													<span>{mapTopic.data.title}</span>
+												</a>
+											</li>
+										);
+									})
+								}
+							</ol>
+						</section>
+					))
+				}
+			</div>
+		</details>
 
 		<article class="topic-shell" aria-labelledby="topic-title">
 			<p class="eyebrow">Investigation</p>
@@ -131,6 +227,7 @@ const { subject, topic, previousTopic, nextTopic } = Astro.props;
 		padding: clamp(28px, 6vw, 76px) clamp(18px, 4vw, 42px) clamp(46px, 8vw, 96px);
 	}
 
+	.orientation,
 	.breadcrumb,
 	.eyebrow,
 	.placeholder p:first-child,
@@ -139,6 +236,31 @@ const { subject, topic, previousTopic, nextTopic } = Astro.props;
 		font-size: 11px;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
+	}
+
+	.orientation {
+		display: grid;
+		gap: 12px;
+		align-items: start;
+		color: var(--lab-faint);
+	}
+
+	.home-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		width: fit-content;
+		color: var(--lab-faint);
+		font-weight: 700;
+		text-decoration: none;
+		transition:
+			color 220ms ease,
+			transform 220ms ease;
+	}
+
+	.home-link:hover {
+		color: var(--lab-cyan);
+		transform: translateX(-2px);
 	}
 
 	.breadcrumb {
@@ -156,6 +278,103 @@ const { subject, topic, previousTopic, nextTopic } = Astro.props;
 	}
 
 	.breadcrumb a:hover {
+		color: var(--lab-cyan);
+	}
+
+	.investigation-map {
+		width: 100%;
+	}
+
+	.investigation-map summary {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		width: fit-content;
+		color: var(--lab-muted);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		cursor: pointer;
+		list-style: none;
+		transition: color 220ms ease;
+	}
+
+	.investigation-map summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.investigation-map summary:hover {
+		color: var(--lab-cyan);
+	}
+
+	.investigation-map[open] summary span:last-child {
+		transform: rotate(180deg);
+	}
+
+	.investigation-map summary span:last-child {
+		transition: transform 220ms ease;
+	}
+
+	.map-panel {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 22px;
+		margin-top: 18px;
+		padding: 20px 0 2px;
+		border-top: 1px solid var(--lab-line);
+	}
+
+	.map-group {
+		display: grid;
+		gap: 12px;
+		min-width: 0;
+	}
+
+	.map-group h2 {
+		margin: 0;
+		color: var(--lab-faint);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	.map-group ol {
+		display: grid;
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.map-link {
+		display: inline-flex;
+		gap: 10px;
+		align-items: baseline;
+		max-width: 100%;
+		color: var(--lab-muted);
+		font-size: 15px;
+		line-height: 1.35;
+		text-decoration: none;
+		transition: color 220ms ease;
+	}
+
+	.map-link:hover,
+	.map-link.is-current {
+		color: var(--lab-text);
+	}
+
+	.map-marker {
+		flex: 0 0 auto;
+		color: var(--lab-faint);
+		font-family: var(--font-mono);
+		font-size: 12px;
+	}
+
+	.map-link.is-current .map-marker {
 		color: var(--lab-cyan);
 	}
 
@@ -261,6 +480,10 @@ const { subject, topic, previousTopic, nextTopic } = Astro.props;
 	}
 
 	@media (max-width: 680px) {
+		.map-panel {
+			grid-template-columns: 1fr;
+		}
+
 		.topic-shell {
 			padding: 28px 20px;
 		}
