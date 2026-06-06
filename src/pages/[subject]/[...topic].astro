@@ -70,6 +70,12 @@ const { subject, topic, subjectTopics, previousTopic, nextTopic } = Astro.props;
 const currentTopicIndex = subjectTopics.findIndex(
 	(subjectTopic) => subjectTopic.data.slug === topic.data.slug,
 );
+let TopicContent = null;
+
+if (topic.data.status === "published") {
+	const renderedTopic = await topic.render();
+	TopicContent = renderedTopic.Content;
+}
 
 const defaultGroupDefinition = [
 	{ title: "Foundations", slugs: ["why-javascript-exists", "data-types", "operators", "loops"] },
@@ -176,10 +182,16 @@ const investigationGroups = getInvestigationGroups(subject.data.slug, subjectTop
 			<h1 id="topic-title">{topic.data.title}</h1>
 			{topic.data.subtitle && <p class="subtitle">{topic.data.subtitle}</p>}
 
-			<div class="placeholder">
-				<p>UNDER CONSTRUCTION</p>
-				<p>Content coming soon.</p>
-			</div>
+			{TopicContent ? (
+				<div class="topic-content">
+					<TopicContent />
+				</div>
+			) : (
+				<div class="placeholder">
+					<p>UNDER CONSTRUCTION</p>
+					<p>Content coming soon.</p>
+				</div>
+			)}
 		</article>
 
 		<nav class="topic-navigation" aria-label="Topic navigation">

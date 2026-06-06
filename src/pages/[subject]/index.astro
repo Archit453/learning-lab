@@ -53,7 +53,9 @@ const displayTopics = [...orderedTopics, ...unorderedTopics];
 									<span class="topic-title">{topic.data.title}</span>
 									<span class="topic-description">{topic.data.description}</span>
 								</span>
-								<span class="topic-status">Under construction</span>
+								<span class:list={["topic-status", { "is-published": topic.data.status === "published" }]}>
+									{topic.data.status === "published" ? "Open Investigation" : "Under Construction"}
+								</span>
 							</a>
 						</li>
 					))
