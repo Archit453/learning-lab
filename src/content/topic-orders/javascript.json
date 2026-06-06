@@ -1,0 +1,13 @@
+{
+	"subject": "javascript",
+	"topics": [
+		"why-javascript-exists",
+		"data-types",
+		"operators",
+		"loops",
+		"functions",
+		"scope",
+		"closures",
+		"event-loop"
+	]
+}

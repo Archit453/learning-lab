@@ -1,0 +1,277 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+	const subjects = await getCollection("subjects");
+	const activeSubjectSlugs = new Set(
+		subjects.filter((subject) => subject.data.status === "active").map((subject) => subject.data.slug),
+	);
+	const topics = await getCollection("topics");
+	const topicOrders = await getCollection("topicOrders");
+	const paths = [];
+
+	for (const order of topicOrders) {
+		if (!activeSubjectSlugs.has(order.data.subject)) {
+			continue;
+		}
+
+		const subjectTopics = topics.filter((topic) => topic.data.subject === order.data.subject);
+		const orderedTopics = order.data.topics
+			.map((slug) => subjectTopics.find((topic) => topic.data.slug === slug))
+			.filter(Boolean);
+		const unorderedTopics = subjectTopics.filter(
+			(topic) => !order.data.topics.includes(topic.data.slug),
+		);
+		const displayTopics = [...orderedTopics, ...unorderedTopics];
+
+		for (const [index, topic] of displayTopics.entries()) {
+			const subject = subjects.find((subject) => subject.data.slug === order.data.subject);
+
+			paths.push({
+				params: { subject: order.data.subject, topic: topic.data.slug },
+				props: {
+					subject,
+					topic,
+					previousTopic: displayTopics[index - 1] ?? null,
+					nextTopic: displayTopics[index + 1] ?? null,
+				},
+			});
+		}
+	}
+
+	const orderedSubjectSlugs = new Set(topicOrders.map((order) => order.data.subject));
+	const unorderedSubjects = subjects.filter(
+		(subject) => subject.data.status === "active" && !orderedSubjectSlugs.has(subject.data.slug),
+	);
+
+	for (const subject of unorderedSubjects) {
+		const subjectTopics = topics.filter((topic) => topic.data.subject === subject.data.slug);
+
+		for (const [index, topic] of subjectTopics.entries()) {
+			paths.push({
+				params: { subject: subject.data.slug, topic: topic.data.slug },
+				props: {
+					subject,
+					topic,
+					previousTopic: subjectTopics[index - 1] ?? null,
+					nextTopic: subjectTopics[index + 1] ?? null,
+				},
+			});
+		}
+	}
+
+	return paths;
+}
+
+const { subject, topic, previousTopic, nextTopic } = Astro.props;
+---
+
+<Layout>
+	<main class="topic-page">
+		<nav class="breadcrumb" aria-label="Breadcrumb">
+			<a href={`/${topic.data.subject}`}>{subject.data.title}</a>
+			<span aria-hidden="true">/</span>
+			<span>{topic.data.title}</span>
+		</nav>
+
+		<article class="topic-shell" aria-labelledby="topic-title">
+			<p class="eyebrow">Investigation</p>
+			<h1 id="topic-title">{topic.data.title}</h1>
+			{topic.data.subtitle && <p class="subtitle">{topic.data.subtitle}</p>}
+
+			<div class="placeholder">
+				<p>UNDER CONSTRUCTION</p>
+				<p>Content coming soon.</p>
+			</div>
+		</article>
+
+		<nav class="topic-navigation" aria-label="Topic navigation">
+			{
+				previousTopic ? (
+					<a href={`/${topic.data.subject}/${previousTopic.data.slug}`}>
+						<span aria-hidden="true">&lt;-</span>
+						<span>
+							<span class="nav-label">Previous Topic</span>
+							<span class="nav-title">{previousTopic.data.title}</span>
+						</span>
+					</a>
+				) : (
+					<a href={`/${topic.data.subject}`}>
+							<span aria-hidden="true">&lt;-</span>
+						<span>
+							<span class="nav-label">Subject Index</span>
+							<span class="nav-title">{subject.data.title}</span>
+						</span>
+					</a>
+				)
+			}
+
+			{
+				nextTopic && (
+					<a class="next" href={`/${topic.data.subject}/${nextTopic.data.slug}`}>
+						<span>
+							<span class="nav-label">Next Topic</span>
+							<span class="nav-title">{nextTopic.data.title}</span>
+						</span>
+						<span aria-hidden="true">-&gt;</span>
+					</a>
+				)
+			}
+		</nav>
+	</main>
+</Layout>
+
+<style>
+	.topic-page {
+		display: grid;
+		gap: clamp(28px, 5vw, 56px);
+		width: min(100%, 920px);
+		margin: 0 auto;
+		padding: clamp(28px, 6vw, 76px) clamp(18px, 4vw, 42px) clamp(46px, 8vw, 96px);
+	}
+
+	.breadcrumb,
+	.eyebrow,
+	.placeholder p:first-child,
+	.nav-label {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	.breadcrumb {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		flex-wrap: wrap;
+		color: var(--lab-faint);
+	}
+
+	.breadcrumb a {
+		color: var(--lab-muted);
+		text-decoration: none;
+		transition: color 220ms ease;
+	}
+
+	.breadcrumb a:hover {
+		color: var(--lab-cyan);
+	}
+
+	.topic-shell {
+		display: grid;
+		gap: 22px;
+		padding: clamp(34px, 6vw, 68px);
+		border: 1px solid rgba(245, 241, 232, 0.12);
+		background:
+			radial-gradient(circle at 85% 0%, rgba(240, 184, 90, 0.09), transparent 22rem),
+			rgba(255, 255, 255, 0.028);
+	}
+
+	.eyebrow {
+		margin: 0;
+		color: var(--lab-amber);
+	}
+
+	h1 {
+		margin: 0;
+		color: var(--lab-text);
+		font-size: clamp(46px, 8vw, 96px);
+		font-weight: 780;
+		letter-spacing: 0;
+		line-height: 0.92;
+		text-wrap: balance;
+	}
+
+	.subtitle {
+		max-width: 700px;
+		margin: 0;
+		color: var(--lab-muted);
+		font-size: clamp(18px, 2vw, 24px);
+		line-height: 1.42;
+		text-wrap: balance;
+	}
+
+	.placeholder {
+		display: grid;
+		gap: 12px;
+		margin-top: clamp(28px, 5vw, 54px);
+		padding-top: clamp(24px, 4vw, 38px);
+		border-top: 1px solid var(--lab-line);
+	}
+
+	.placeholder p {
+		margin: 0;
+	}
+
+	.placeholder p:first-child {
+		color: var(--lab-amber);
+	}
+
+	.placeholder p:last-child {
+		color: var(--lab-muted);
+		font-size: clamp(18px, 2vw, 22px);
+	}
+
+	.topic-navigation {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.topic-navigation a {
+		display: flex;
+		gap: 14px;
+		align-items: center;
+		min-height: 92px;
+		padding: 20px;
+		color: var(--lab-text);
+		text-decoration: none;
+		border: 1px solid rgba(245, 241, 232, 0.1);
+		background: rgba(255, 255, 255, 0.026);
+		transition:
+			border-color 220ms ease,
+			background 220ms ease,
+			transform 220ms ease;
+	}
+
+	.topic-navigation a:hover {
+		border-color: rgba(146, 232, 255, 0.36);
+		background: rgba(255, 255, 255, 0.045);
+		transform: translateY(-2px);
+	}
+
+	.topic-navigation .next {
+		justify-content: flex-end;
+		text-align: right;
+	}
+
+	.nav-label {
+		display: block;
+		color: var(--lab-faint);
+	}
+
+	.nav-title {
+		display: block;
+		margin-top: 6px;
+		font-size: 18px;
+		font-weight: 720;
+		line-height: 1.15;
+	}
+
+	@media (max-width: 680px) {
+		.topic-shell {
+			padding: 28px 20px;
+		}
+
+		.topic-navigation {
+			grid-template-columns: 1fr;
+		}
+
+		.topic-navigation .next {
+			justify-content: space-between;
+			text-align: left;
+		}
+	}
+</style>

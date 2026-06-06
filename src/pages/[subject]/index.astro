@@ -1,0 +1,215 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+	const subjects = await getCollection("subjects");
+	const activeSubjects = subjects.filter((subject) => subject.data.status === "active");
+
+	return activeSubjects.map((subject) => ({
+		params: { subject: subject.data.slug },
+		props: { subject },
+	}));
+}
+
+const { subject } = Astro.props;
+const allTopics = await getCollection("topics");
+const topicOrders = await getCollection("topicOrders");
+const order = topicOrders.find((entry) => entry.data.subject === subject.data.slug);
+const subjectTopics = allTopics.filter((topic) => topic.data.subject === subject.data.slug);
+const topicsBySlug = new Map(subjectTopics.map((topic) => [topic.data.slug, topic]));
+const orderedSlugs = order?.data.topics ?? [];
+const orderedTopics = orderedSlugs.map((slug) => topicsBySlug.get(slug)).filter(Boolean);
+const unorderedTopics = subjectTopics.filter((topic) => !orderedSlugs.includes(topic.data.slug));
+const displayTopics = [...orderedTopics, ...unorderedTopics];
+---
+
+<Layout>
+	<main class="subject-page">
+		<section class="subject-hero" aria-labelledby="subject-title">
+			<p class="eyebrow">Subject</p>
+			<h1 id="subject-title">{subject.data.title}</h1>
+			<p>{subject.data.description}</p>
+		</section>
+
+		<section class="topic-map" aria-labelledby="topic-map-title">
+			<div class="map-heading">
+				<p class="eyebrow">Contents</p>
+				<h2 id="topic-map-title">Map of investigations</h2>
+			</div>
+
+			<ol class="topic-list">
+				{
+					displayTopics.map((topic, index) => (
+						<li>
+							<a href={`/${subject.data.slug}/${topic.data.slug}`}>
+								<span class="topic-number">{String(index + 1).padStart(2, "0")}</span>
+								<span class="topic-copy">
+									<span class="topic-title">{topic.data.title}</span>
+									<span class="topic-description">{topic.data.description}</span>
+								</span>
+								<span class="topic-status">Under construction</span>
+							</a>
+						</li>
+					))
+				}
+			</ol>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	.subject-page {
+		width: min(100%, var(--lab-max));
+		margin: 0 auto;
+		padding: clamp(34px, 6vw, 84px) clamp(18px, 4vw, 52px) clamp(54px, 8vw, 104px);
+	}
+
+	.subject-hero {
+		display: grid;
+		gap: 20px;
+		max-width: 820px;
+		padding: clamp(42px, 8vw, 92px) 0 clamp(34px, 6vw, 74px);
+	}
+
+	.eyebrow,
+	.topic-number,
+	.topic-status {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	.eyebrow {
+		color: var(--lab-amber);
+	}
+
+	h1,
+	h2 {
+		margin: 0;
+		color: var(--lab-text);
+		letter-spacing: 0;
+		text-wrap: balance;
+	}
+
+	h1 {
+		font-size: clamp(58px, 10vw, 128px);
+		font-weight: 780;
+		line-height: 0.9;
+	}
+
+	h2 {
+		font-size: clamp(26px, 4vw, 46px);
+		font-weight: 720;
+		line-height: 1;
+	}
+
+	.subject-hero p:not(.eyebrow) {
+		max-width: 660px;
+		margin: 0;
+		color: var(--lab-muted);
+		font-size: clamp(18px, 2vw, 24px);
+		line-height: 1.42;
+		text-wrap: balance;
+	}
+
+	.topic-map {
+		display: grid;
+		grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+		gap: clamp(26px, 5vw, 72px);
+		padding-top: clamp(28px, 4vw, 48px);
+		border-top: 1px solid var(--lab-line);
+	}
+
+	.map-heading {
+		position: sticky;
+		top: 32px;
+		display: grid;
+		gap: 16px;
+		align-self: start;
+	}
+
+	.topic-list {
+		display: grid;
+		gap: 12px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.topic-list a {
+		display: grid;
+		grid-template-columns: 52px minmax(0, 1fr) auto;
+		gap: 20px;
+		align-items: start;
+		min-height: 112px;
+		padding: 22px;
+		text-decoration: none;
+		border: 1px solid rgba(245, 241, 232, 0.1);
+		background:
+			radial-gradient(circle at 100% 0%, rgba(146, 232, 255, 0.07), transparent 18rem),
+			rgba(255, 255, 255, 0.028);
+		transition:
+			border-color 220ms ease,
+			background 220ms ease,
+			transform 220ms ease;
+	}
+
+	.topic-list a:hover {
+		border-color: rgba(146, 232, 255, 0.36);
+		background:
+			radial-gradient(circle at 100% 0%, rgba(146, 232, 255, 0.12), transparent 18rem),
+			rgba(255, 255, 255, 0.045);
+		transform: translateY(-2px);
+	}
+
+	.topic-number {
+		color: var(--lab-faint);
+	}
+
+	.topic-copy {
+		display: grid;
+		gap: 8px;
+	}
+
+	.topic-title {
+		color: var(--lab-text);
+		font-size: clamp(22px, 2.4vw, 30px);
+		font-weight: 720;
+		letter-spacing: 0;
+		line-height: 1.05;
+	}
+
+	.topic-description {
+		max-width: 58ch;
+		color: var(--lab-muted);
+		font-size: 15px;
+		line-height: 1.5;
+	}
+
+	.topic-status {
+		color: var(--lab-amber);
+		white-space: nowrap;
+	}
+
+	@media (max-width: 820px) {
+		.topic-map {
+			grid-template-columns: 1fr;
+		}
+
+		.map-heading {
+			position: static;
+		}
+
+		.topic-list a {
+			grid-template-columns: 1fr;
+			gap: 12px;
+		}
+
+		.topic-status {
+			white-space: normal;
+		}
+	}
+</style>
