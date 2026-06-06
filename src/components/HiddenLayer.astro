@@ -1,0 +1,267 @@
+---
+const surfaceItems = ["Syntax", "APIs", "Frameworks", "Tools", "Patterns"];
+const depthItems = ["Problems", "Constraints", "Tradeoffs", "Evolution", "Mental models"];
+---
+
+<section class="hidden-layer scene" aria-labelledby="hidden-layer-title">
+	<div class="scene-inner">
+		<div class="copy" data-reveal>
+			<p class="eyebrow">The hidden layer</p>
+			<h2 id="hidden-layer-title">Syntax is visible. Origins are hidden.</h2>
+			<p>
+				Learning Lab begins beneath the surface, where tools become questions and
+				decisions become visible.
+			</p>
+		</div>
+
+		<div class="layer-stage" data-reveal aria-label="A layered view of visible and hidden learning">
+			<div class="surface-plane">
+				<p class="plane-label">Visible</p>
+				{
+					surfaceItems.map((item) => (
+						<span class="surface-token">{item}</span>
+					))
+				}
+			</div>
+			<div class="depth-plane">
+				<p class="plane-label">Beneath</p>
+				{
+					depthItems.map((item) => (
+						<span class="depth-token">{item}</span>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.scene {
+		position: relative;
+		min-height: 100svh;
+		padding: clamp(86px, 13vw, 170px) clamp(20px, 4vw, 64px);
+	}
+
+	.scene-inner {
+		display: grid;
+		grid-template-columns: minmax(0, 0.86fr) minmax(360px, 1.14fr);
+		gap: clamp(44px, 8vw, 120px);
+		align-items: center;
+		width: min(100%, var(--lab-max));
+		margin: 0 auto;
+	}
+
+	.copy {
+		max-width: 560px;
+	}
+
+	.eyebrow,
+	.plane-label {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	.eyebrow {
+		margin-bottom: 22px;
+		color: var(--lab-cyan);
+	}
+
+	h2 {
+		margin: 0;
+		color: var(--lab-text);
+		font-size: clamp(42px, 7vw, 92px);
+		font-weight: 760;
+		letter-spacing: 0;
+		line-height: 0.94;
+		text-wrap: balance;
+	}
+
+	.copy p:not(.eyebrow) {
+		max-width: 510px;
+		margin: 28px 0 0;
+		color: var(--lab-muted);
+		font-size: clamp(17px, 1.7vw, 23px);
+		line-height: 1.45;
+	}
+
+	.layer-stage {
+		position: relative;
+		min-height: 560px;
+		perspective: 1200px;
+	}
+
+	.layer-stage::before {
+		position: absolute;
+		inset: 9% 7%;
+		content: "";
+		border: 1px solid var(--lab-line);
+		transform: rotateX(62deg) rotateZ(-18deg);
+	}
+
+	.layer-stage::after {
+		position: absolute;
+		top: 50%;
+		left: 8%;
+		width: 84%;
+		height: 1px;
+		content: "";
+		background: linear-gradient(90deg, transparent, var(--lab-line-strong), transparent);
+		transform: rotate(-19deg);
+	}
+
+	.surface-plane,
+	.depth-plane {
+		position: absolute;
+		left: 50%;
+		width: min(460px, 82vw);
+		min-height: 245px;
+		padding: 26px;
+		border: 1px solid var(--lab-line);
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+			rgba(7, 10, 12, 0.56);
+		backdrop-filter: blur(14px);
+		transform-style: preserve-3d;
+	}
+
+	.surface-plane {
+		top: 34px;
+		transform: translateX(-48%) rotateX(62deg) rotateZ(-18deg);
+		animation: surfaceRise 1.8s ease both;
+	}
+
+	.depth-plane {
+		bottom: 46px;
+		border-color: rgba(240, 184, 90, 0.24);
+		transform: translateX(-52%) rotateX(62deg) rotateZ(-18deg);
+		opacity: 0.78;
+		animation: depthReveal 2s 260ms ease both;
+	}
+
+	.plane-label {
+		position: absolute;
+		top: 24px;
+		left: 26px;
+		color: var(--lab-faint);
+	}
+
+	.surface-token,
+	.depth-token {
+		position: absolute;
+		display: inline-flex;
+		align-items: center;
+		min-height: 34px;
+		padding: 0 12px;
+		border: 1px solid var(--lab-line);
+		color: var(--lab-muted);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		background: rgba(255, 255, 255, 0.035);
+	}
+
+	.depth-token {
+		border-color: rgba(240, 184, 90, 0.21);
+		color: rgba(245, 241, 232, 0.78);
+	}
+
+	.surface-token:nth-of-type(1) {
+		top: 82px;
+		left: 46px;
+	}
+
+	.surface-token:nth-of-type(2) {
+		top: 126px;
+		left: 188px;
+	}
+
+	.surface-token:nth-of-type(3) {
+		top: 62px;
+		right: 42px;
+	}
+
+	.surface-token:nth-of-type(4) {
+		bottom: 46px;
+		left: 96px;
+	}
+
+	.surface-token:nth-of-type(5) {
+		right: 58px;
+		bottom: 66px;
+	}
+
+	.depth-token:nth-of-type(1) {
+		top: 86px;
+		left: 58px;
+	}
+
+	.depth-token:nth-of-type(2) {
+		top: 128px;
+		right: 54px;
+	}
+
+	.depth-token:nth-of-type(3) {
+		top: 70px;
+		right: 132px;
+	}
+
+	.depth-token:nth-of-type(4) {
+		bottom: 52px;
+		left: 94px;
+	}
+
+	.depth-token:nth-of-type(5) {
+		right: 62px;
+		bottom: 48px;
+	}
+
+	@keyframes surfaceRise {
+		from {
+			opacity: 0;
+			transform: translateX(-48%) translateY(28px) rotateX(62deg) rotateZ(-18deg);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateX(-48%) translateY(0) rotateX(62deg) rotateZ(-18deg);
+		}
+	}
+
+	@keyframes depthReveal {
+		from {
+			opacity: 0;
+			transform: translateX(-52%) translateY(44px) rotateX(62deg) rotateZ(-18deg);
+		}
+
+		to {
+			opacity: 0.78;
+			transform: translateX(-52%) translateY(0) rotateX(62deg) rotateZ(-18deg);
+		}
+	}
+
+	@media (max-width: 920px) {
+		.scene-inner {
+			grid-template-columns: 1fr;
+		}
+
+		.layer-stage {
+			min-height: 460px;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.scene {
+			padding: 86px 18px;
+		}
+
+		.layer-stage {
+			min-height: 390px;
+			margin-inline: -38px;
+			transform: scale(0.83);
+		}
+	}
+</style>

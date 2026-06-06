@@ -2,22 +2,104 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<meta
+			name="description"
+			content="Learning Lab teaches technology from first principles by starting with questions."
+		/>
+		<title>Learning Lab</title>
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
 
-<style>
+<style is:global>
+	:root {
+		color-scheme: dark;
+		--lab-black: #050607;
+		--lab-ink: #0a0d10;
+		--lab-panel: rgba(255, 255, 255, 0.055);
+		--lab-line: rgba(220, 236, 255, 0.16);
+		--lab-line-strong: rgba(220, 236, 255, 0.34);
+		--lab-text: #f5f1e8;
+		--lab-muted: rgba(245, 241, 232, 0.66);
+		--lab-faint: rgba(245, 241, 232, 0.38);
+		--lab-cyan: #92e8ff;
+		--lab-amber: #f0b85a;
+		--lab-green: #a8f0c5;
+		--lab-red: #ff7c5f;
+		--lab-max: 1180px;
+		--font-sans:
+			Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+		--font-mono:
+			"SFMono-Regular", "Cascadia Code", "Liberation Mono", Consolas, monospace;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
 	html,
 	body {
 		margin: 0;
 		width: 100%;
-		height: 100%;
+		min-height: 100%;
+		background:
+			radial-gradient(circle at 14% 8%, rgba(146, 232, 255, 0.13), transparent 29rem),
+			radial-gradient(circle at 86% 20%, rgba(240, 184, 90, 0.1), transparent 31rem),
+			linear-gradient(180deg, #060708 0%, #090b0e 52%, #050607 100%);
+		color: var(--lab-text);
+		font-family: var(--font-sans);
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		scroll-behavior: smooth;
+	}
+
+	body::before {
+		position: fixed;
+		inset: 0;
+		z-index: -2;
+		pointer-events: none;
+		content: "";
+		background-image:
+			linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.027) 1px, transparent 1px);
+		background-size: 84px 84px;
+		mask-image: radial-gradient(circle at center, black, transparent 78%);
+	}
+
+	body::after {
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		content: "";
+		background:
+			linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 16%, transparent 84%, rgba(255, 255, 255, 0.025)),
+			radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.46) 76%);
+	}
+
+	a {
+		color: inherit;
+	}
+
+	::selection {
+		background: rgba(146, 232, 255, 0.26);
+		color: var(--lab-text);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.001ms !important;
+			animation-iteration-count: 1 !important;
+			scroll-behavior: auto !important;
+			transition-duration: 0.001ms !important;
+		}
 	}
 </style>

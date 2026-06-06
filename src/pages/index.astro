@@ -1,11 +1,118 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import HiddenLayer from "../components/HiddenLayer.astro";
+import MethodScene from "../components/MethodScene.astro";
+import PathsScene from "../components/PathsScene.astro";
+import QuestionField from "../components/QuestionField.astro";
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-	<Welcome />
+	<main class="lab-home" data-lab-home>
+		<div class="ambient-orbit ambient-orbit-a"></div>
+		<div class="ambient-orbit ambient-orbit-b"></div>
+		<QuestionField />
+		<HiddenLayer />
+		<MethodScene />
+		<PathsScene />
+	</main>
 </Layout>
+
+<script>
+	const revealTargets = document.querySelectorAll("[data-reveal]");
+
+	const revealObserver = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.isIntersecting) {
+					entry.target.classList.add("is-visible");
+				}
+			}
+		},
+		{ threshold: 0.18, rootMargin: "0px 0px -10% 0px" },
+	);
+
+	for (const target of revealTargets) {
+		revealObserver.observe(target);
+	}
+</script>
+
+<style>
+	.lab-home {
+		position: relative;
+		overflow: hidden;
+		min-height: 100vh;
+	}
+
+	.ambient-orbit {
+		position: fixed;
+		z-index: -1;
+		width: 42vw;
+		aspect-ratio: 1;
+		border: 1px solid rgba(146, 232, 255, 0.11);
+		border-radius: 999px;
+		pointer-events: none;
+		filter: blur(0.2px);
+		opacity: 0.72;
+	}
+
+	.ambient-orbit::before,
+	.ambient-orbit::after {
+		position: absolute;
+		inset: 12%;
+		content: "";
+		border: 1px solid rgba(240, 184, 90, 0.08);
+		border-radius: inherit;
+	}
+
+	.ambient-orbit::after {
+		inset: 31%;
+		border-color: rgba(245, 241, 232, 0.08);
+	}
+
+	.ambient-orbit-a {
+		top: -18vw;
+		left: -17vw;
+		animation: drift 28s ease-in-out infinite alternate;
+	}
+
+	.ambient-orbit-b {
+		right: -21vw;
+		bottom: 12vh;
+		width: 50vw;
+		border-color: rgba(168, 240, 197, 0.08);
+		animation: drift 34s ease-in-out infinite alternate-reverse;
+	}
+
+	:global([data-reveal]) {
+		opacity: 0;
+		transform: translateY(28px);
+		transition:
+			opacity 900ms ease,
+			transform 900ms ease;
+	}
+
+	:global([data-reveal].is-visible) {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	@keyframes drift {
+		from {
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+
+		to {
+			transform: translate3d(24px, -18px, 0) rotate(8deg);
+		}
+	}
+
+	@media (max-width: 780px) {
+		.ambient-orbit {
+			width: 86vw;
+		}
+
+		.ambient-orbit-b {
+			width: 108vw;
+		}
+	}
+</style>

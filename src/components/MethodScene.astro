@@ -1,0 +1,219 @@
+---
+const methodQuestions = [
+	"What problem appeared?",
+	"What constraints existed?",
+	"What tradeoffs were made?",
+	"How did the system evolve?",
+	"What mental model remains?",
+];
+---
+
+<section class="method-scene scene" id="method" aria-labelledby="method-title">
+	<div class="scene-inner">
+		<div class="thesis" data-reveal>
+			<p class="eyebrow">The Learning Lab method</p>
+			<h2 id="method-title">
+				<span>Most platforms start with answers.</span>
+				<span>Learning Lab starts with questions.</span>
+			</h2>
+		</div>
+
+		<div class="method-system" data-reveal>
+			<div class="axis" aria-hidden="true"></div>
+			<ol>
+				{
+					methodQuestions.map((question, index) => (
+						<li style={`--index: ${index + 1}`}>
+							<span class="step-number">{String(index + 1).padStart(2, "0")}</span>
+							<span class="step-question">{question}</span>
+						</li>
+					))
+				}
+			</ol>
+		</div>
+	</div>
+</section>
+
+<style>
+	.scene {
+		position: relative;
+		min-height: 100svh;
+		padding: clamp(86px, 13vw, 170px) clamp(20px, 4vw, 64px);
+	}
+
+	.method-scene::before {
+		position: absolute;
+		inset: 9% 0 auto;
+		height: 1px;
+		content: "";
+		background: linear-gradient(90deg, transparent, rgba(146, 232, 255, 0.24), transparent);
+	}
+
+	.scene-inner {
+		display: grid;
+		grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+		gap: clamp(48px, 8vw, 104px);
+		align-items: center;
+		width: min(100%, var(--lab-max));
+		min-height: 70svh;
+		margin: 0 auto;
+	}
+
+	.eyebrow {
+		margin: 0 0 24px;
+		color: var(--lab-green);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	h2 {
+		display: grid;
+		gap: 28px;
+		margin: 0;
+		font-size: clamp(43px, 7.7vw, 106px);
+		font-weight: 760;
+		letter-spacing: 0;
+		line-height: 0.94;
+		text-wrap: balance;
+	}
+
+	h2 span:first-child {
+		color: rgba(245, 241, 232, 0.38);
+	}
+
+	h2 span:last-child {
+		color: var(--lab-text);
+	}
+
+	.method-system {
+		position: relative;
+		min-height: 540px;
+	}
+
+	.axis {
+		position: absolute;
+		top: 6%;
+		bottom: 6%;
+		left: 26px;
+		width: 1px;
+		background: linear-gradient(180deg, transparent, var(--lab-line-strong), transparent);
+	}
+
+	.axis::before,
+	.axis::after {
+		position: absolute;
+		left: -4px;
+		width: 9px;
+		height: 9px;
+		content: "";
+		border: 1px solid var(--lab-cyan);
+		border-radius: 999px;
+		box-shadow: 0 0 18px rgba(146, 232, 255, 0.46);
+	}
+
+	.axis::before {
+		top: 0;
+	}
+
+	.axis::after {
+		bottom: 0;
+		border-color: var(--lab-amber);
+		box-shadow: 0 0 18px rgba(240, 184, 90, 0.42);
+	}
+
+	ol {
+		display: grid;
+		gap: 18px;
+		margin: 0;
+		padding: 42px 0 42px 62px;
+		list-style: none;
+	}
+
+	li {
+		position: relative;
+		display: grid;
+		grid-template-columns: 54px 1fr;
+		gap: 20px;
+		align-items: center;
+		min-height: 74px;
+		padding: 18px 0;
+		border-bottom: 1px solid rgba(245, 241, 232, 0.1);
+		opacity: 0;
+		transform: translateX(20px);
+	}
+
+	.method-system.is-visible li {
+		animation: stepIn 720ms calc(var(--index) * 120ms) ease forwards;
+	}
+
+	li::before {
+		position: absolute;
+		top: 50%;
+		left: -62px;
+		width: 42px;
+		height: 1px;
+		content: "";
+		background: var(--lab-line);
+	}
+
+	.step-number {
+		color: var(--lab-faint);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		letter-spacing: 0.16em;
+	}
+
+	.step-question {
+		color: var(--lab-text);
+		font-size: clamp(20px, 2.3vw, 30px);
+		line-height: 1.18;
+		text-wrap: balance;
+	}
+
+	@keyframes stepIn {
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
+	@media (max-width: 940px) {
+		.scene-inner {
+			grid-template-columns: 1fr;
+		}
+
+		.method-system {
+			min-height: auto;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.scene {
+			padding: 90px 18px;
+		}
+
+		h2 {
+			gap: 20px;
+		}
+
+		ol {
+			padding-left: 44px;
+		}
+
+		li {
+			grid-template-columns: 42px 1fr;
+			gap: 14px;
+		}
+
+		.axis {
+			left: 18px;
+		}
+
+		li::before {
+			left: -44px;
+			width: 28px;
+		}
+	}
+</style>
