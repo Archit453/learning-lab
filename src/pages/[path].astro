@@ -1,0 +1,113 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+export function getStaticPaths() {
+	const paths = [
+		{ slug: "javascript", name: "JavaScript" },
+		{ slug: "react", name: "React" },
+		{ slug: "backend", name: "Backend" },
+		{ slug: "typescript", name: "TypeScript" },
+		{ slug: "tailwind", name: "Tailwind CSS" },
+		{ slug: "system-design", name: "System Design" },
+		{ slug: "devops", name: "DevOps" },
+		{ slug: "security", name: "Security" },
+		{ slug: "ai", name: "AI" },
+	];
+
+	return paths.map((path) => ({
+		params: { path: path.slug },
+		props: { path },
+	}));
+}
+
+const { path } = Astro.props;
+---
+
+<Layout>
+	<main class="path-page">
+		<section class="placeholder" aria-labelledby="path-title">
+			<h1 id="path-title">{path.name}</h1>
+			<p class="status">Under Construction</p>
+			<p class="message">This path is currently being built.</p>
+			<a class="return-home" href="/">
+				<span aria-hidden="true">&lt;-</span>
+				<span>Return Home</span>
+			</a>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	.path-page {
+		position: relative;
+		display: grid;
+		place-items: center;
+		min-height: 100svh;
+		padding: clamp(28px, 7vw, 96px);
+	}
+
+	.placeholder {
+		position: relative;
+		display: grid;
+		justify-items: start;
+		width: min(560px, 100%);
+	}
+
+	.status,
+	.return-home {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	h1 {
+		margin: 0;
+		color: var(--lab-text);
+		font-size: clamp(44px, 8vw, 86px);
+		font-weight: 780;
+		letter-spacing: 0;
+		line-height: 0.94;
+		text-wrap: balance;
+	}
+
+	.status {
+		margin: 30px 0 0;
+		color: var(--lab-amber);
+	}
+
+	.message {
+		max-width: 32ch;
+		margin: 18px 0 0;
+		color: var(--lab-muted);
+		font-size: clamp(17px, 1.5vw, 20px);
+		line-height: 1.45;
+		text-wrap: balance;
+	}
+
+	.return-home {
+		display: inline-flex;
+		align-items: center;
+		gap: 12px;
+		margin-top: 42px;
+		color: var(--lab-text);
+		font-weight: 800;
+		text-decoration: none;
+		transition:
+			color 220ms ease,
+			transform 220ms ease;
+	}
+
+	.return-home:hover {
+		color: var(--lab-cyan);
+		transform: translateX(-3px);
+	}
+
+	@media (max-width: 620px) {
+		.path-page {
+			place-items: start;
+			align-items: center;
+			padding: 28px 18px;
+		}
+	}
+</style>

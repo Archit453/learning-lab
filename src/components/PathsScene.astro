@@ -1,35 +1,145 @@
 ---
-const paths = [
-	["React", "Why did interfaces become state problems?", "Future path"],
-	["TypeScript", "Why did JavaScript need contracts?", "Future path"],
-	["Backend", "Why did logic move behind interfaces?", "Future path"],
-	["Tailwind CSS", "Why did styling become compositional?", "Future path"],
-	["System Design", "Why do systems fail at scale?", "Future path"],
-	["DevOps", "Why did deployment become a discipline?", "Future path"],
-	["Security", "Why is trust never automatic?", "Future path"],
-	["AI", "Why did prediction become programmable?", "Future path"],
+const pathData = [
+	{
+		id: "javascript",
+		name: "JavaScript",
+		status: "Active path",
+		statusNote: "Open investigation",
+		question: "Why does JavaScript exist?",
+		description: "Start with the language of the web and uncover the decisions that shaped it.",
+		cta: "Enter JavaScript Path",
+		href: "/javascript",
+	},
+	{
+		id: "react",
+		name: "React",
+		status: "Future path",
+		statusNote: "Under construction",
+		question: "Why did interfaces become state problems?",
+		description: "Trace the pressure that made UI logic harder to reason about.",
+		cta: "Enter React Path",
+		href: "/react",
+	},
+	{
+		id: "backend",
+		name: "Backend",
+		status: "Future path",
+		statusNote: "Under construction",
+		question: "Why did logic move behind interfaces?",
+		description: "Follow the boundary where computation leaves the page and becomes a service.",
+		cta: "Enter Backend Path",
+		href: "/backend",
+	},
+	{
+		id: "typescript",
+		name: "TypeScript",
+		status: "Future path",
+		statusNote: "Under construction",
+		question: "Why did JavaScript need contracts?",
+		description: "Inspect the moment flexible systems begin asking for guarantees.",
+		cta: "Enter TypeScript Path",
+		href: "/typescript",
+	},
+	{
+		id: "tailwind",
+		name: "Tailwind CSS",
+		status: "Future path",
+		statusNote: "Under construction",
+		question: "Why did styling become compositional?",
+		description: "Explore how design systems changed the way interfaces are assembled.",
+		cta: "Enter Tailwind CSS Path",
+		href: "/tailwind",
+	},
+	{
+		id: "system-design",
+		name: "System Design",
+		status: "Future path",
+		statusNote: "Under construction",
+		question: "Why do systems fail at scale?",
+		description: "Study the hidden pressures that appear when simple systems multiply.",
+		cta: "Enter System Design Path",
+		href: "/system-design",
+	},
+	{
+		id: "devops",
+		name: "DevOps",
+		status: "Future path",
+		statusNote: "Under construction",
+		question: "Why did deployment become a discipline?",
+		description: "Look at the operational questions that appear after software leaves a laptop.",
+		cta: "Enter DevOps Path",
+		href: "/devops",
+	},
+	{
+		id: "security",
+		name: "Security",
+		status: "Future path",
+		statusNote: "Under construction",
+		question: "Why is trust never automatic?",
+		description: "Follow the assumptions systems make and the places those assumptions break.",
+		cta: "Enter Security Path",
+		href: "/security",
+	},
+	{
+		id: "ai",
+		name: "AI",
+		status: "Future path",
+		statusNote: "Under construction",
+		question: "Why did prediction become programmable?",
+		description: "Examine the shift from explicit instructions to systems that infer patterns.",
+		cta: "Enter AI Path",
+		href: "/ai",
+	},
 ];
+
+const activePath = pathData[0];
 ---
 
 <section class="paths-scene scene" id="paths" aria-labelledby="paths-title">
 	<div class="scene-inner">
-		<div class="paths-map" data-reveal aria-label="Future Learning Lab paths">
-			<div class="active-path">
-				<p class="status">Active path</p>
-				<h2 id="paths-title">JavaScript</h2>
-				<p class="active-question">Why does JavaScript exist?</p>
-				<a href="/" class="path-cta" aria-label="Enter JavaScript Path">Enter JavaScript Path</a>
-			</div>
+		<div class="paths-map" data-reveal data-path-scene aria-label="Learning Lab path selector">
+			<nav class="path-index" aria-label="Learning paths">
+				<p class="index-label">Paths</p>
+				<div class="index-axis" aria-hidden="true"></div>
+				<div class="path-controls">
+					{
+						pathData.map((path) => (
+							<button
+								class:list={["path-choice", { "is-selected": path.id === activePath.id }]}
+								type="button"
+								data-path={path.id}
+								aria-pressed={path.id === activePath.id ? "true" : "false"}
+							>
+								<span class="choice-dot" aria-hidden="true"></span>
+								<span class="choice-copy">
+									<span class="choice-name">{path.name}</span>
+									<span class="choice-question">{path.question}</span>
+								</span>
+							</button>
+						))
+					}
+				</div>
+			</nav>
 
-			{
-				paths.map(([name, question, status], index) => (
-					<article class={`path-node path-node-${index + 1}`}>
-						<p>{status}</p>
-						<h3>{name}</h3>
-						<span>{question}</span>
-					</article>
-				))
-			}
+			<div class="portal-field">
+				<div class="atmospheric-trace" aria-hidden="true"></div>
+				<article class="investigation-portal" data-portal>
+					<div class="portal-grid" aria-hidden="true"></div>
+					<div class="portal-content" data-portal-content>
+						<div class="status-row">
+							<p class="status" data-status>{activePath.status}</p>
+							<span data-status-note>{activePath.statusNote}</span>
+						</div>
+						<h2 id="paths-title" data-title>{activePath.name}</h2>
+						<p class="active-question" data-question>{activePath.question}</p>
+						<p class="path-description" data-description>{activePath.description}</p>
+						<a href={activePath.href} class="path-cta" data-cta>
+							<span>{activePath.cta}</span>
+							<span aria-hidden="true">-&gt;</span>
+						</a>
+					</div>
+				</article>
+			</div>
 		</div>
 
 		<div class="closing" data-reveal>
@@ -42,6 +152,60 @@ const paths = [
 		</div>
 	</div>
 </section>
+
+<script define:vars={{ pathData }}>
+	const scene = document.querySelector("[data-path-scene]");
+
+	if (scene) {
+		const controls = Array.from(scene.querySelectorAll("[data-path]"));
+		const portal = scene.querySelector("[data-portal]");
+		const content = scene.querySelector("[data-portal-content]");
+		const status = scene.querySelector("[data-status]");
+		const statusNote = scene.querySelector("[data-status-note]");
+		const title = scene.querySelector("[data-title]");
+		const question = scene.querySelector("[data-question]");
+		const description = scene.querySelector("[data-description]");
+		const cta = scene.querySelector("[data-cta]");
+
+		const pathsById = new Map(pathData.map((path) => [path.id, path]));
+		let selectedPath = "javascript";
+
+		const updatePath = (pathId) => {
+			const path = pathsById.get(pathId);
+
+			if (!path || path.id === selectedPath) {
+				return;
+			}
+
+			selectedPath = path.id;
+
+			for (const control of controls) {
+				const isSelected = control.dataset.path === path.id;
+				control.classList.toggle("is-selected", isSelected);
+				control.setAttribute("aria-pressed", String(isSelected));
+			}
+
+			content.classList.add("is-switching");
+			portal.dataset.status = path.status.toLowerCase().includes("active") ? "active" : "future";
+
+			window.setTimeout(() => {
+				status.textContent = path.status;
+				statusNote.textContent = path.statusNote;
+				title.textContent = path.name;
+				question.textContent = path.question;
+				description.textContent = path.description;
+				cta.href = path.href;
+				cta.querySelector("span:first-child").textContent = path.cta;
+				cta.classList.toggle("is-future", path.status.toLowerCase().includes("future"));
+				content.classList.remove("is-switching");
+			}, 170);
+		};
+
+		for (const control of controls) {
+			control.addEventListener("click", () => updatePath(control.dataset.path));
+		}
+	}
+</script>
 
 <style>
 	.scene {
@@ -59,10 +223,15 @@ const paths = [
 
 	.paths-map {
 		position: relative;
+		display: grid;
+		grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
+		gap: clamp(28px, 5vw, 72px);
+		align-items: center;
 		min-height: 720px;
+		padding: clamp(26px, 4vw, 54px);
 		border: 1px solid rgba(245, 241, 232, 0.11);
 		background:
-			radial-gradient(circle at 50% 45%, rgba(146, 232, 255, 0.12), transparent 21rem),
+			radial-gradient(circle at 66% 46%, rgba(146, 232, 255, 0.12), transparent 22rem),
 			linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
 		overflow: hidden;
 	}
@@ -73,6 +242,7 @@ const paths = [
 		content: "";
 		border: 1px solid var(--lab-line);
 		border-radius: 999px;
+		pointer-events: none;
 	}
 
 	.paths-map::after {
@@ -81,32 +251,19 @@ const paths = [
 		content: "";
 		border: 1px solid rgba(240, 184, 90, 0.12);
 		border-radius: 999px;
+		pointer-events: none;
 		transform: rotate(-12deg);
 	}
 
-	.active-path {
-		position: absolute;
-		z-index: 3;
-		top: 50%;
-		left: 50%;
-		display: grid;
-		place-items: center;
-		width: min(420px, calc(100% - 42px));
-		min-height: 320px;
-		padding: 38px;
-		text-align: center;
-		border: 1px solid rgba(146, 232, 255, 0.38);
-		background:
-			radial-gradient(circle at 50% 0%, rgba(146, 232, 255, 0.18), transparent 72%),
-			rgba(5, 8, 10, 0.82);
-		box-shadow:
-			0 0 80px rgba(146, 232, 255, 0.12),
-			inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-		transform: translate(-50%, -50%);
+	.path-index {
+		position: relative;
+		z-index: 4;
+		align-self: center;
+		padding: 14px 0 14px 18px;
 	}
 
+	.index-label,
 	.status,
-	.path-node p,
 	.eyebrow {
 		margin: 0;
 		font-family: var(--font-mono);
@@ -115,25 +272,269 @@ const paths = [
 		text-transform: uppercase;
 	}
 
-	.status {
-		color: var(--lab-green);
+	.index-label {
+		margin-bottom: 22px;
+		color: var(--lab-faint);
 	}
 
-	.active-path h2 {
-		margin: 12px 0 0;
+	.index-axis {
+		position: absolute;
+		top: 54px;
+		bottom: 18px;
+		left: 22px;
+		width: 1px;
+		background: linear-gradient(180deg, transparent, var(--lab-line-strong), transparent);
+	}
+
+	.path-controls {
+		display: grid;
+		gap: 8px;
+	}
+
+	.path-choice {
+		position: relative;
+		display: grid;
+		grid-template-columns: 18px 1fr;
+		gap: 13px;
+		align-items: start;
+		width: 100%;
+		min-height: 43px;
+		padding: 4px 0;
+		color: var(--lab-faint);
+		text-align: left;
+		background: transparent;
+		border: 0;
+		cursor: pointer;
+	}
+
+	.choice-dot {
+		position: relative;
+		z-index: 2;
+		width: 9px;
+		height: 9px;
+		margin-top: 8px;
+		border: 1px solid rgba(245, 241, 232, 0.38);
+		border-radius: 999px;
+		background: rgba(5, 7, 9, 0.95);
+		transition:
+			background 260ms ease,
+			border-color 260ms ease,
+			box-shadow 260ms ease;
+	}
+
+	.choice-copy {
+		display: grid;
+		gap: 3px;
+	}
+
+	.choice-name {
+		color: rgba(245, 241, 232, 0.62);
+		font-size: 15px;
+		font-weight: 650;
+		letter-spacing: 0;
+		line-height: 1.1;
+		transition: color 260ms ease;
+	}
+
+	.choice-question {
+		max-width: 26ch;
+		color: rgba(245, 241, 232, 0.32);
+		font-size: 12px;
+		line-height: 1.3;
+		opacity: 0;
+		transform: translateY(-3px);
+		transition:
+			opacity 260ms ease,
+			transform 260ms ease,
+			color 260ms ease;
+	}
+
+	.path-choice:hover .choice-name,
+	.path-choice.is-selected .choice-name {
 		color: var(--lab-text);
-		font-size: clamp(46px, 6.8vw, 90px);
+	}
+
+	.path-choice:hover .choice-question,
+	.path-choice.is-selected .choice-question {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.path-choice.is-selected .choice-dot {
+		border-color: var(--lab-cyan);
+		background: var(--lab-cyan);
+		box-shadow: 0 0 22px rgba(146, 232, 255, 0.72);
+	}
+
+	.portal-field {
+		position: relative;
+		z-index: 3;
+		display: grid;
+		place-items: center;
+		min-height: 610px;
+	}
+
+	.portal-field::before {
+		position: absolute;
+		inset: 7%;
+		content: "";
+		border: 1px solid rgba(245, 241, 232, 0.1);
+		border-radius: 999px;
+		transform: rotate(9deg);
+	}
+
+	.portal-field::after {
+		position: absolute;
+		inset: 22% 16%;
+		content: "";
+		border: 1px solid rgba(146, 232, 255, 0.14);
+		border-radius: 999px;
+		transform: rotate(-17deg);
+		transition: transform 480ms ease;
+	}
+
+	.atmospheric-trace {
+		position: absolute;
+		top: 50%;
+		left: -58px;
+		z-index: 1;
+		width: clamp(120px, 16vw, 210px);
+		height: 1px;
+		background: linear-gradient(90deg, rgba(245, 241, 232, 0.1), transparent);
+		opacity: 0.58;
+		pointer-events: none;
+		transform: rotate(-4deg);
+	}
+
+	.investigation-portal {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		place-items: center;
+		width: min(520px, 100%);
+		min-height: 410px;
+		padding: clamp(30px, 4vw, 48px);
+		text-align: center;
+		border: 1px solid rgba(146, 232, 255, 0.4);
+		background:
+			radial-gradient(circle at 50% 0%, rgba(146, 232, 255, 0.18), transparent 67%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+			rgba(5, 8, 10, 0.84);
+		box-shadow:
+			0 0 95px rgba(146, 232, 255, 0.13),
+			inset 0 0 0 1px rgba(255, 255, 255, 0.045);
+		overflow: hidden;
+		transition:
+			border-color 320ms ease,
+			box-shadow 320ms ease,
+			transform 320ms ease;
+	}
+
+	.investigation-portal:hover {
+		border-color: rgba(146, 232, 255, 0.62);
+		box-shadow:
+			0 0 115px rgba(146, 232, 255, 0.17),
+			inset 0 0 0 1px rgba(255, 255, 255, 0.075);
+		transform: translateY(-2px);
+	}
+
+	.investigation-portal[data-status="future"] {
+		border-color: rgba(240, 184, 90, 0.32);
+		box-shadow:
+			0 0 82px rgba(240, 184, 90, 0.08),
+			inset 0 0 0 1px rgba(255, 255, 255, 0.045);
+	}
+
+	.portal-grid {
+		position: absolute;
+		inset: 0;
+		opacity: 0.52;
+		background-image:
+			linear-gradient(rgba(245, 241, 232, 0.06) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(245, 241, 232, 0.045) 1px, transparent 1px);
+		background-size: 42px 42px;
+		mask-image: radial-gradient(circle at center, black, transparent 76%);
+		transition: opacity 320ms ease;
+	}
+
+	.investigation-portal:hover .portal-grid {
+		opacity: 0.74;
+	}
+
+	.portal-content {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		justify-items: center;
+		transition:
+			opacity 170ms ease,
+			transform 170ms ease,
+			filter 170ms ease;
+	}
+
+	.portal-content.is-switching {
+		opacity: 0;
+		filter: blur(2px);
+		transform: translateY(10px);
+	}
+
+	.status-row {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		flex-wrap: wrap;
+	}
+
+	.status {
+		display: inline-flex;
+		align-items: center;
+		min-height: 28px;
+		padding: 0 10px;
+		color: var(--lab-green);
+		border: 1px solid rgba(168, 240, 197, 0.28);
+		background: rgba(168, 240, 197, 0.06);
+	}
+
+	.status-row span {
+		color: var(--lab-faint);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.investigation-portal[data-status="future"] .status {
+		color: var(--lab-amber);
+		border-color: rgba(240, 184, 90, 0.28);
+		background: rgba(240, 184, 90, 0.06);
+	}
+
+	.investigation-portal h2 {
+		margin: 20px 0 0;
+		color: var(--lab-text);
+		font-size: clamp(50px, 7vw, 96px);
 		font-weight: 780;
 		letter-spacing: 0;
-		line-height: 0.94;
+		line-height: 0.9;
+		text-wrap: balance;
 	}
 
 	.active-question {
-		max-width: 25ch;
+		max-width: 26ch;
+		margin: 22px auto 0;
+		color: var(--lab-text);
+		font-size: clamp(21px, 2.4vw, 31px);
+		line-height: 1.16;
+		text-wrap: balance;
+	}
+
+	.path-description {
+		max-width: 35ch;
 		margin: 18px auto 0;
 		color: var(--lab-muted);
-		font-size: clamp(18px, 2vw, 24px);
-		line-height: 1.25;
+		font-size: clamp(15px, 1.4vw, 18px);
+		line-height: 1.45;
 		text-wrap: balance;
 	}
 
@@ -141,142 +542,43 @@ const paths = [
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 48px;
-		margin-top: 28px;
+		gap: 12px;
+		min-height: 50px;
+		margin-top: 30px;
 		padding: 0 20px;
 		color: var(--lab-black);
 		font-family: var(--font-mono);
 		font-size: 12px;
-		font-weight: 700;
+		font-weight: 800;
 		letter-spacing: 0.12em;
 		text-decoration: none;
 		text-transform: uppercase;
 		background: var(--lab-text);
 		transition:
 			background 220ms ease,
-			transform 220ms ease;
+			color 220ms ease,
+			transform 220ms ease,
+			box-shadow 220ms ease;
 	}
 
 	.path-cta:hover {
 		background: var(--lab-cyan);
+		box-shadow: 0 0 28px rgba(146, 232, 255, 0.22);
 		transform: translateY(-2px);
 	}
 
-	.path-node {
-		position: absolute;
-		z-index: 2;
-		width: min(245px, 24vw);
-		padding: 18px;
-		border: 1px solid rgba(245, 241, 232, 0.12);
-		background: rgba(5, 7, 9, 0.54);
-		backdrop-filter: blur(10px);
-		opacity: 0.72;
+	.path-cta.is-future {
+		color: rgba(245, 241, 232, 0.82);
+		background: rgba(245, 241, 232, 0.075);
+		box-shadow: inset 0 0 0 1px rgba(245, 241, 232, 0.16);
 	}
 
-	.path-node::before {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		z-index: -1;
-		width: 74px;
-		height: 1px;
-		content: "";
-		background: var(--lab-line);
-		transform-origin: left;
-	}
-
-	.path-node p {
-		color: var(--lab-faint);
-	}
-
-	.path-node h3 {
-		margin: 12px 0 9px;
-		color: rgba(245, 241, 232, 0.78);
-		font-size: clamp(19px, 1.8vw, 25px);
-		font-weight: 680;
-		letter-spacing: 0;
-		line-height: 1;
-	}
-
-	.path-node span {
-		display: block;
-		color: rgba(245, 241, 232, 0.5);
-		font-size: 14px;
-		line-height: 1.35;
-	}
-
-	.path-node-1 {
-		top: 10%;
-		left: 14%;
-	}
-
-	.path-node-1::before {
-		transform: rotate(31deg);
-	}
-
-	.path-node-2 {
-		top: 11%;
-		right: 12%;
-	}
-
-	.path-node-2::before {
-		transform: rotate(146deg);
-	}
-
-	.path-node-3 {
-		top: 37%;
-		left: 5%;
-	}
-
-	.path-node-3::before {
-		transform: rotate(12deg);
-	}
-
-	.path-node-4 {
-		top: 38%;
-		right: 4%;
-	}
-
-	.path-node-4::before {
-		transform: rotate(170deg);
-	}
-
-	.path-node-5 {
-		bottom: 11%;
-		left: 13%;
-	}
-
-	.path-node-5::before {
-		transform: rotate(-22deg);
-	}
-
-	.path-node-6 {
-		right: 16%;
-		bottom: 10%;
-	}
-
-	.path-node-6::before {
-		transform: rotate(205deg);
-	}
-
-	.path-node-7 {
-		top: 64%;
-		left: 36%;
-		transform: translateX(-50%);
-	}
-
-	.path-node-7::before {
-		transform: rotate(-66deg);
-	}
-
-	.path-node-8 {
-		top: 64%;
-		right: 34%;
-		transform: translateX(50%);
-	}
-
-	.path-node-8::before {
-		transform: rotate(246deg);
+	.path-cta.is-future:hover {
+		color: var(--lab-text);
+		background: rgba(240, 184, 90, 0.1);
+		box-shadow:
+			inset 0 0 0 1px rgba(240, 184, 90, 0.28),
+			0 0 26px rgba(240, 184, 90, 0.1);
 	}
 
 	.closing {
@@ -312,40 +614,63 @@ const paths = [
 
 	@media (max-width: 980px) {
 		.paths-map {
-			display: grid;
-			gap: 14px;
+			grid-template-columns: 1fr;
+			gap: 28px;
 			min-height: auto;
-			padding: 18px;
+			padding: 22px;
 		}
 
-		.paths-map::before,
-		.paths-map::after {
-			inset: 18px;
-			border-radius: 0;
+		.path-index {
+			padding: 0;
 		}
 
-		.active-path,
-		.path-node {
-			position: relative;
-			inset: auto;
-			width: 100%;
-			transform: none;
-		}
-
-		.active-path {
-			min-height: auto;
-			padding: 34px 20px;
-			order: -1;
-		}
-
-		.path-node::before {
+		.index-axis {
 			display: none;
+		}
+
+		.path-controls {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 10px 14px;
+		}
+
+		.path-choice {
+			min-height: 40px;
+		}
+
+		.atmospheric-trace {
+			display: none;
+		}
+
+		.choice-question {
+			display: none;
+		}
+
+		.portal-field {
+			min-height: auto;
+			padding: 34px 0;
 		}
 	}
 
 	@media (max-width: 620px) {
 		.scene {
 			padding: 90px 18px 64px;
+		}
+
+		.path-controls {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.choice-name {
+			font-size: 14px;
+		}
+
+		.portal-field::before,
+		.portal-field::after {
+			inset: 4%;
+		}
+
+		.investigation-portal {
+			min-height: auto;
 		}
 
 		.path-cta {
