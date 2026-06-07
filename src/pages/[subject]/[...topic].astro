@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 
 export async function getStaticPaths() {
@@ -73,7 +74,7 @@ const currentTopicIndex = subjectTopics.findIndex(
 let TopicContent = null;
 
 if (topic.data.status === "published") {
-	const renderedTopic = await topic.render();
+	const renderedTopic = await render(topic);
 	TopicContent = renderedTopic.Content;
 }
 
