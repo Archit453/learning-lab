@@ -406,3 +406,34 @@ They are more predictable and easier to reason about.
 * Prefer `===` over `==`.
 
 ---
+---
+
+## One Final Question
+
+Operators help us perform work.
+
+```js
+count = count + 1;
+```
+
+But what if we need to perform the same operation 1,000 times?
+
+Would we write:
+
+```js
+count = count + 1;
+count = count + 1;
+count = count + 1;
+// ...
+```
+
+again and again?
+
+Humans get tired of repeating work.
+
+Computers don't.
+
+So how do we tell a computer to repeat the same set of instructions?
+
+➡️ **Next Investigation: Loops**
+---
