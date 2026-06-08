@@ -11,20 +11,10 @@ modes:
     src: "/notes/javascript/Operator.svg"
     alt: "Handwritten revision notes for JavaScript operators"
 ---
----
-
-title: "Operators"
-slug: "operators"
-subject: "javascript"
-description: "Learn how JavaScript performs calculations, comparisons, and type conversions."
-order: 3
---------
 
 ## Data Type Revision
 
 Before moving forward, let's quickly revisit what we learned in the previous lesson.
-
-<img src="/diagram/Operator.svg" alt="Data Type Revision" />
 
 Every value in JavaScript belongs to one of two families:
 

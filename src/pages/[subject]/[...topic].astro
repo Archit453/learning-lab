@@ -118,13 +118,13 @@ function getInvestigationGroups(subjectSlug, topics) {
 const investigationGroups = getInvestigationGroups(subject.data.slug, subjectTopics);
 const notesMode = topic.data.modes?.notes;
 const hasNotesMode = Boolean(notesMode?.src);
-const availableModes = [{ id: "article", label: "Article" }];
+const availableModes = [{ id: "learn", label: "Learn" }];
 
 if (hasNotesMode) {
 	availableModes.push({ id: "notes", label: "Notes" });
 }
 
-const activeMode = "article";
+const activeMode = "learn";
 ---
 
 <Layout>
@@ -199,7 +199,7 @@ const activeMode = "article";
 			}
 
 			<div data-lesson-mode-content data-notes-src={notesMode?.src} data-notes-alt={notesMode?.alt}>
-				<div data-lesson-view="article">
+				<div data-lesson-view="learn">
 					{TopicContent ? (
 						<div class="topic-content">
 							<TopicContent />
@@ -255,20 +255,20 @@ const activeMode = "article";
 	const modeContent = document.querySelector("[data-lesson-mode-content]");
 
 	if (topicShell && modeContent) {
-		const articleView = modeContent.querySelector("[data-lesson-view='article']");
+		const learnView = modeContent.querySelector("[data-lesson-view='learn']");
 		const notesSrc = modeContent.getAttribute("data-notes-src");
 		const notesAlt = modeContent.getAttribute("data-notes-alt");
 
 		topicShell.addEventListener("lesson-mode-change", (event) => {
 			const mode = event instanceof CustomEvent ? event.detail?.mode : null;
 
-			if (mode === "article") {
-				articleView?.removeAttribute("hidden");
+			if (mode === "learn") {
+				learnView?.removeAttribute("hidden");
 				modeContent.querySelector("[data-lesson-view='notes']")?.setAttribute("hidden", "");
 				return;
 			}
 
-			if (mode === "notes" && notesSrc && notesAlt && articleView) {
+			if (mode === "notes" && notesSrc && notesAlt && learnView) {
 				let notesView = modeContent.querySelector("[data-lesson-view='notes']");
 
 				if (!notesView) {
@@ -290,7 +290,7 @@ const activeMode = "article";
 					modeContent.append(notesView);
 				}
 
-				articleView.setAttribute("hidden", "");
+				learnView.setAttribute("hidden", "");
 				notesView.removeAttribute("hidden");
 			}
 		});
