@@ -20,6 +20,16 @@ const topics = defineCollection({
 		subtitle: z.string().optional(),
 		description: z.string(),
 		status: z.enum(["draft", "published"]),
+		modes: z
+			.object({
+				notes: z
+					.object({
+						src: z.string(),
+						alt: z.string(),
+					})
+					.optional(),
+			})
+			.optional(),
 	}),
 });
 

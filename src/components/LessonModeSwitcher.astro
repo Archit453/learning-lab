@@ -1,0 +1,84 @@
+---
+const { availableModes, activeMode } = Astro.props;
+---
+
+<div class="lesson-mode-switcher" role="tablist" aria-label="Lesson modes" data-lesson-mode-switcher>
+	{
+		availableModes.map((mode) => (
+			<button
+				type="button"
+				class:list={["mode-button", { "is-active": mode.id === activeMode }]}
+				role="tab"
+				aria-selected={mode.id === activeMode ? "true" : "false"}
+				data-lesson-mode-button={mode.id}
+			>
+				{mode.label}
+			</button>
+		))
+	}
+</div>
+
+<script>
+	const modeSwitchers = document.querySelectorAll("[data-lesson-mode-switcher]");
+
+	for (const switcher of modeSwitchers) {
+		const modeButtons = switcher.querySelectorAll("[data-lesson-mode-button]");
+
+		for (const button of modeButtons) {
+			button.addEventListener("click", () => {
+				const mode = button.getAttribute("data-lesson-mode-button");
+
+				if (!mode) {
+					return;
+				}
+
+				for (const modeButton of modeButtons) {
+					const isActive = modeButton.getAttribute("data-lesson-mode-button") === mode;
+					modeButton.classList.toggle("is-active", isActive);
+					modeButton.setAttribute("aria-selected", String(isActive));
+				}
+
+				switcher.dispatchEvent(
+					new CustomEvent("lesson-mode-change", {
+						bubbles: true,
+						detail: { mode },
+					}),
+				);
+			});
+		}
+	}
+</script>
+
+<style>
+	.lesson-mode-switcher {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+	}
+
+	.mode-button {
+		padding: 9px 13px;
+		color: var(--lab-muted);
+		font: inherit;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		cursor: pointer;
+		border: 1px solid var(--lab-line);
+		background: rgba(255, 255, 255, 0.026);
+		transition:
+			color 180ms ease,
+			border-color 180ms ease,
+			background 180ms ease;
+	}
+
+	.mode-button:hover,
+	.mode-button.is-active {
+		color: var(--lab-text);
+		border-color: rgba(146, 232, 255, 0.36);
+		background: rgba(255, 255, 255, 0.045);
+	}
+</style>

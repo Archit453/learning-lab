@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import { getCollection, render } from "astro:content";
+import LessonModeSwitcher from "../../components/LessonModeSwitcher.astro";
 import Layout from "../../layouts/Layout.astro";
 
 export async function getStaticPaths() {
@@ -115,6 +116,15 @@ function getInvestigationGroups(subjectSlug, topics) {
 }
 
 const investigationGroups = getInvestigationGroups(subject.data.slug, subjectTopics);
+const notesMode = topic.data.modes?.notes;
+const hasNotesMode = Boolean(notesMode?.src);
+const availableModes = [{ id: "article", label: "Article" }];
+
+if (hasNotesMode) {
+	availableModes.push({ id: "notes", label: "Notes" });
+}
+
+const activeMode = "article";
 ---
 
 <Layout>
@@ -182,17 +192,26 @@ const investigationGroups = getInvestigationGroups(subject.data.slug, subjectTop
 			<p class="eyebrow">Investigation</p>
 			<h1 id="topic-title">{topic.data.title}</h1>
 			{topic.data.subtitle && <p class="subtitle">{topic.data.subtitle}</p>}
+			{
+				availableModes.length > 1 && (
+					<LessonModeSwitcher availableModes={availableModes} activeMode={activeMode} />
+				)
+			}
 
-			{TopicContent ? (
-				<div class="topic-content">
-					<TopicContent />
+			<div data-lesson-mode-content data-notes-src={notesMode?.src} data-notes-alt={notesMode?.alt}>
+				<div data-lesson-view="article">
+					{TopicContent ? (
+						<div class="topic-content">
+							<TopicContent />
+						</div>
+					) : (
+						<div class="placeholder">
+							<p>UNDER CONSTRUCTION</p>
+							<p>Content coming soon.</p>
+						</div>
+					)}
 				</div>
-			) : (
-				<div class="placeholder">
-					<p>UNDER CONSTRUCTION</p>
-					<p>Content coming soon.</p>
-				</div>
-			)}
+			</div>
 		</article>
 
 		<nav class="topic-navigation" aria-label="Topic navigation">
@@ -230,6 +249,53 @@ const investigationGroups = getInvestigationGroups(subject.data.slug, subjectTop
 		</nav>
 	</main>
 </Layout>
+
+<script>
+	const topicShell = document.querySelector(".topic-shell");
+	const modeContent = document.querySelector("[data-lesson-mode-content]");
+
+	if (topicShell && modeContent) {
+		const articleView = modeContent.querySelector("[data-lesson-view='article']");
+		const notesSrc = modeContent.getAttribute("data-notes-src");
+		const notesAlt = modeContent.getAttribute("data-notes-alt");
+
+		topicShell.addEventListener("lesson-mode-change", (event) => {
+			const mode = event instanceof CustomEvent ? event.detail?.mode : null;
+
+			if (mode === "article") {
+				articleView?.removeAttribute("hidden");
+				modeContent.querySelector("[data-lesson-view='notes']")?.setAttribute("hidden", "");
+				return;
+			}
+
+			if (mode === "notes" && notesSrc && notesAlt && articleView) {
+				let notesView = modeContent.querySelector("[data-lesson-view='notes']");
+
+				if (!notesView) {
+					notesView = document.createElement("div");
+					const notesImage = document.createElement("img");
+
+					notesView.setAttribute("data-lesson-view", "notes");
+					notesView.className = "topic-notes";
+					notesImage.src = notesSrc;
+					notesImage.alt = notesAlt;
+					notesImage.loading = "lazy";
+					notesImage.decoding = "async";
+					notesImage.style.width = "100%";
+					notesImage.style.height = "auto";
+					notesImage.style.display = "block";
+					notesImage.style.margin = "0 auto";
+
+					notesView.append(notesImage);
+					modeContent.append(notesView);
+				}
+
+				articleView.setAttribute("hidden", "");
+				notesView.removeAttribute("hidden");
+			}
+		});
+	}
+</script>
 
 <style>
 	.topic-page {
@@ -444,6 +510,18 @@ const investigationGroups = getInvestigationGroups(subject.data.slug, subjectTop
 	.placeholder p:last-child {
 		color: var(--lab-muted);
 		font-size: clamp(18px, 2vw, 22px);
+	}
+
+	.topic-notes {
+		margin-top: clamp(28px, 5vw, 54px);
+		padding-top: clamp(24px, 4vw, 38px);
+		border-top: 1px solid var(--lab-line);
+	}
+
+	.topic-notes img {
+		display: block;
+		width: 100%;
+		height: auto;
 	}
 
 	.topic-navigation {
