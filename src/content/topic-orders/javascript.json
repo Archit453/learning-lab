@@ -7,6 +7,8 @@
 		"loops",
 		"numbers",
 		"strings",
+		"arrays",
+		"objects",
 		"functions",
 		"scope",
 		"closures",

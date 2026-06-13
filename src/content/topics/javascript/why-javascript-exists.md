@@ -5,6 +5,11 @@ subject: "javascript"
 subtitle: "The story of Netscape, Sun, Microsoft, and a language built in ten days."
 description: "Why the web needed a programming language inside the browser."
 status: "published"
+
+modes:
+  notes:
+    src: "/notes/javascript/Day1.svg"
+    alt: "Handwritten revision notes"
 ---
 # Why JavaScript Exists
 
